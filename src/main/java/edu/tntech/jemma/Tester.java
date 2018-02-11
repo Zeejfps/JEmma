@@ -2,8 +2,6 @@ package edu.tntech.jemma;
 
 import edu.tntech.jemma.models.Member;
 
-import java.util.List;
-
 public class Tester {
 
     public static void main(String[] args) {
@@ -14,26 +12,34 @@ public class Tester {
 
         JEmma jemma = new JEmma(accountID, publicKey, privateKey);
 
-        List<Member> members = jemma.members().fetchAll()
-                .from(0).to(2)
-                .showDeleted()
-                .execute();
+        jemma.members().fetchAll().execute().forEach(member -> {
+            System.out.println(member.getEmail());
+        });
 
-        jemma.members().fetchAll()
-                .from(20).to(13).execute();
+        jemma.members().fetchByEmail()
+                .email("zeejfps@gmail.com")
+                .execute()
+                .ifPresent(member -> {
+            System.out.println(member.getMemberId());
+            if (jemma.members().optout()
+                    .member(member)
+                    .execute()) {
+                System.out.println(member.getMemberId());
+                System.out.println(member.getEmail() + " has been opted out");
+            }
 
-        Member idMember = jemma.members().fetchByID()
-                .id(2).showDeleted()
-                .execute();
+            jemma.members().fetchOptouts()
+                .member(member)
+                .execute().forEach(optout -> {
+                    System.out.println(optout.getTimestamp());
+                });
+        });
 
-        jemma.members().fetchByID().execute();
-
-        Member emailMember = jemma.members().fetchByEmail()
-                .email("lol@lol.lol").showDeleted()
-                .execute();
-
-        jemma.members().fetchByEmail().execute();
-
+        jemma.members().fetchByID()
+                .id(1889629215).showDeleted()
+                .execute().ifPresent(member -> {
+            System.out.println(member.getStatus());
+        });
     }
 
 }
