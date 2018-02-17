@@ -39,7 +39,7 @@ public class Tester {
         );
         members.add(jemma.members().create("other@lol.wat"));
 
-        int importID = jemma.members().save(members).automateFieldChanges().setSourceFilename("Lol1.csv").execute();
+        long importID = jemma.members().save(members).automateFieldChanges().setSourceFilename("Lol1.csv").execute();
         System.out.println(importID);
 
     }
