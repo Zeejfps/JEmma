@@ -1,6 +1,7 @@
 package edu.tntech.jemma;
 
-import edu.tntech.jemma.models.Member;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tester {
 
@@ -12,34 +13,38 @@ public class Tester {
 
         JEmma jemma = new JEmma(accountID, publicKey, privateKey);
 
-        jemma.members().fetchAll().execute().forEach(member -> {
+        /*jemma.members().listAll().from(1).includeDeleted()
+                .execute().forEach(member -> {
+            System.out.println(member.getMemberId());
+        });*/
+
+        jemma.members().list(10).execute().forEach(member -> {
             System.out.println(member.getEmail());
         });
 
-        jemma.members().fetchByEmail()
-                .email("zeejfps@gmail.com")
-                .execute()
-                .ifPresent(member -> {
-            System.out.println(member.getMemberId());
-            if (jemma.members().optout()
-                    .member(member)
-                    .execute()) {
-                System.out.println(member.getMemberId());
-                System.out.println(member.getEmail() + " has been opted out");
-            }
-
-            jemma.members().fetchOptouts()
-                .member(member)
-                .execute().forEach(optout -> {
-                    System.out.println(optout.getTimestamp());
-                });
-        });
-
-        jemma.members().fetchByID()
-                .id(1889629215).showDeleted()
+        jemma.members().get(1889979423).includeDeleted()
                 .execute().ifPresent(member -> {
             System.out.println(member.getStatus());
         });
+
+        jemma.members().get("zeejfps@gmail.com").includeDeleted()
+                .execute().ifPresent(member -> {
+            System.out.println(member.getStatus());
+        });
+
+        List<Members.Factory> members = new ArrayList<>();
+        members.add(jemma.members().create("zeejfps@gmail.com")
+                .addField("first_name", "Zee")
+                .addField("last_name", "Jenkins")
+                .addField("Sex", "Male")
+        );
+        members.add(jemma.members().create("other@lol.wat"));
+
+        int importID = jemma.members().save(members)
+                .setSourceFilename("somecsv.csv")
+                .automateFieldChanges().execute();
+        System.out.println(importID);
+
     }
 
 }

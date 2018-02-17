@@ -52,104 +52,58 @@ public class Member {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public Object getConfirmedOptIn() {
         return confirmedOptIn;
-    }
-
-    public void setConfirmedOptIn(Object confirmedOptIn) {
-        this.confirmedOptIn = confirmedOptIn;
     }
 
     public int getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
-
     public Map<String, String> getFields() {
         return fields;
-    }
-
-    public void setFields(Map<String, String> fields) {
-        this.fields = fields;
     }
 
     public long getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(long memberId) {
-        this.memberId = memberId;
-    }
-
     public LocalDateTime getLastModifiedAt() {
         return lastModifiedAt;
-    }
-
-    public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
     }
 
     public String getMemberStatusId() {
         return memberStatusId;
     }
 
-    public void setMemberStatusId(String memberStatusId) {
-        this.memberStatusId = memberStatusId;
-    }
-
     public boolean isPlaintextPreferred() {
         return plaintextPreferred;
-    }
-
-    public void setPlaintextPreferred(boolean plaintextPreferred) {
-        this.plaintextPreferred = plaintextPreferred;
     }
 
     public Object getEmailError() {
         return emailError;
     }
 
-    public void setEmailError(Object emailError) {
-        this.emailError = emailError;
-    }
-
     public String getMemberSince() {
         return memberSince;
-    }
-
-    public void setMemberSince(String memberSince) {
-        this.memberSince = memberSince;
     }
 
     public int getBounceCount() {
         return bounceCount;
     }
 
-    public void setBounceCount(int bounceCount) {
-        this.bounceCount = bounceCount;
-    }
-
     public LocalDateTime getDeletedAt() {
         return deletedAt;
-    }
-
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public static class Builder {
+
+
+
     }
 
 }

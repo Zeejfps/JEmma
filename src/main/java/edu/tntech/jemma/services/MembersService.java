@@ -1,15 +1,35 @@
 package edu.tntech.jemma.services;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+import edu.tntech.jemma.methods.members.PostMembers;
 import edu.tntech.jemma.models.Member;
-import edu.tntech.jemma.models.Optout;
-import okhttp3.HttpUrl;
+import retrofit2.Call;
+import retrofit2.http.*;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface MembersService {
-    List<Member> fetchAll(HttpUrl url);
-    Optional<Member> fetch(HttpUrl url);
-    List<Optout> fetchOptouts(HttpUrl url);
-    boolean optout(HttpUrl url);
+
+    @GET("members")
+    Call<List<Member>> fetchAllMembers(@Nullable @Query("start") Integer start,
+                                       @Nullable @Query("end") Integer end,
+                                       @Nullable @Query("deleted") Boolean deleted);
+
+    @GET("members/{id}")
+    Call<Member> fetchMemberById(@Path("id") long memberID,
+                             @Nullable @Query("deleted") Boolean deleted);
+
+
+    @GET("members/email/{email}")
+    Call<Member> fetchMemberByEmail(@NotNull @Path("email") String email,
+                             @Nullable @Query("deleted") Boolean deleted);
+
+
+    @POST("members/add")
+    Call<Integer> addOrUpdate(@Body Member.Builder member);
+
+
+    @POST("members")
+    Call<PostMembers.Response> addOrUpdate(@Body PostMembers members);
 }
