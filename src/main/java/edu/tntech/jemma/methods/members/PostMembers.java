@@ -1,79 +1,60 @@
 package edu.tntech.jemma.methods.members;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import edu.tntech.jemma.services.MembersService;
-import retrofit2.Response;
+import edu.tntech.jemma.JEmma;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-public class PostMembers {
+public class PostMembers extends MembersApiMethod<Long>{
 
-    @SerializedName("members")
-    private List<HashMap<String, String>> members;
+    private JsonObject jsonObject;
 
-    @SerializedName("automate_field_changes")
-    private Boolean automateFieldChanges;
-
-    @SerializedName("source_filename")
-    private String sourceFilename;
-
-    @SerializedName("add_only")
-    private Boolean addOnly;
-
-    @SerializedName("group_ids")
-    private int[] groupIds;
-
-    private transient final MembersService service;
-
-    public PostMembers(MembersService service, List<HashMap<String, String>> members) {
-        this.service = service;
-        this.members = members;
+    public PostMembers(JEmma jemma, List<HashMap<String, String>> members) {
+        super(jemma);
+        this.jsonObject = new JsonObject();
+        jsonObject.add("members", jemma.getGson().toJsonTree(members));
     }
 
     public PostMembers automateFieldChanges() {
-        this.automateFieldChanges = true;
+        jsonObject.addProperty("automate_field_changes", true);
         return this;
     }
 
     public PostMembers setSourceFilename(String filename) {
-        this.sourceFilename = filename;
+        jsonObject.addProperty("source_filename", filename);
         return this;
     }
 
     public PostMembers setAddOnly() {
-        this.addOnly = true;
+        jsonObject.addProperty("add_only", true);
         return this;
     }
 
     public PostMembers addToGroups(int[] groupIds){
-        this.groupIds = groupIds;
+        jsonObject.add("group_ids", jemma.getGson().toJsonTree(groupIds));
         return this;
     }
 
-    public int execute() {
-        try {
-            retrofit2.Response<Response> response = service.addOrUpdate(this).execute();
-            Response data = response.body();
-            if (response.isSuccessful() && data != null)
-                return data.getImportID();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return -1;
+    public Long execute() {
+        String json = jsonObject.toString();
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .post(body).build();
+        return execute(request, Response.class).getImportID();
     }
 
-    public class Response {
-
+    private static class Response {
         @SerializedName("import_id")
-        private int importID;
-
-        public int getImportID() {
+        private Long importID;
+        Long getImportID() {
             return importID;
         }
-
     }
 
 }

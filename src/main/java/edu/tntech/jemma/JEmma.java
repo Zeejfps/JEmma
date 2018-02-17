@@ -3,45 +3,59 @@ package edu.tntech.jemma;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import edu.tntech.jemma.services.MembersService;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 public class JEmma {
+
+    public static final String SCHEME = "https";
+    public static final String API_URL = "api.e2ma.net";
+
+    private final String accountID;
+
+    private final OkHttpClient httpClient;
+    private final Gson gson;
 
     private final Members members;
 
     public JEmma(String accountID, String publicKey, String privateKey){
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+        this.accountID = accountID;
+
+        this.httpClient = new OkHttpClient.Builder()
+                .readTimeout(1, TimeUnit.MINUTES)
                 .authenticator((route, response) -> {
                     String credentials = Credentials.basic(publicKey, privateKey);
                     return response.request().newBuilder().header("Authorization", credentials).build();
                 }).build();
 
-        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class,
+        this.gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class,
                 (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
             String dateTimeStr = json.getAsJsonPrimitive().getAsString();
             return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("'@D:'yyyy-MM-dd'T'HH:mm:ss"));
         }).create();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .baseUrl("https://api.e2ma.net/" + accountID + "/")
-                .client(okHttpClient)
-                .build();
-
-        MembersService membersService = retrofit.create(MembersService.class);
-        members = new Members(membersService);
+        members = new Members(this);
     }
 
     public Members members() {
         return members;
+    }
+
+    public String getAccountID() {
+        return accountID;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 
 }

@@ -1,11 +1,7 @@
 package edu.tntech.jemma;
 
 import com.sun.istack.internal.NotNull;
-import edu.tntech.jemma.methods.members.GetMemberByEmail;
-import edu.tntech.jemma.methods.members.GetMemberByID;
-import edu.tntech.jemma.methods.members.GetMembers;
-import edu.tntech.jemma.methods.members.PostMembers;
-import edu.tntech.jemma.services.MembersService;
+import edu.tntech.jemma.methods.members.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,34 +9,38 @@ import java.util.List;
 
 public class Members {
 
-    private final MembersService service;
+    private final JEmma jemma;
 
-    Members(MembersService service) {
-        this.service = service;
+    Members(JEmma jemma) {
+        this.jemma = jemma;
     }
 
     public Factory create(String email) {
         return new Factory(email);
     }
 
-    public GetMembers listAll() {
-        return new GetMembers(service);
+    public GetMemberCount count() {
+        return new GetMemberCount(jemma);
+    }
+
+    public GetAllMembers listAll() {
+        return new GetAllMembers(jemma);
     }
 
     public GetMembers list(int length) {
-        return new GetMembers(service, length);
+        return new GetMembers(jemma, length);
     }
 
     public GetMemberByID get(long memberID) {
         if (memberID < 0)
             throw new IllegalArgumentException("'memberID' can not be negative");
-        return new GetMemberByID(service, memberID);
+        return new GetMemberByID(jemma, memberID);
     }
 
     public GetMemberByEmail get(@NotNull String memberEmail) {
         if (memberEmail == null || memberEmail.isEmpty())
             throw new IllegalArgumentException("'memberEmail' can not be null or empty");
-        return new GetMemberByEmail(service, memberEmail);
+        return new GetMemberByEmail(jemma, memberEmail);
     }
 
     public PostMembers save(List<Factory> members) {
@@ -48,7 +48,7 @@ public class Members {
         for (Factory member : members) {
             membersToAdd.add(member.toMap());
         }
-        return new PostMembers(service, membersToAdd);
+        return new PostMembers(jemma, membersToAdd);
     }
 
     public class Factory {
