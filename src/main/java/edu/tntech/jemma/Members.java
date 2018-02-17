@@ -51,6 +51,10 @@ public class Members {
         return new PostMembers(jemma, membersToAdd);
     }
 
+    public PostMember save(String email) {
+        return new PostMember(jemma, email);
+    }
+
     public class Factory {
 
         private final HashMap<String, String> fields;

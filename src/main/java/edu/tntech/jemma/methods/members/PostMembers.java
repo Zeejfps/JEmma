@@ -1,6 +1,7 @@
 package edu.tntech.jemma.methods.members;
 
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import edu.tntech.jemma.JEmma;
 import okhttp3.MediaType;
@@ -12,49 +13,58 @@ import java.util.List;
 
 public class PostMembers extends MembersApiMethod<Long>{
 
-    private JsonObject jsonObject;
+    @Expose@SerializedName("members")
+    private List<HashMap<String, String>> memebers;
+
+    @Expose@SerializedName("automate_field_changes")
+    private Boolean automateFieldChanges;
+
+    @Expose@SerializedName("source_filename")
+    private String sourceFilename;
+
+    @Expose@SerializedName("add_only")
+    private Boolean addOnly;
+
+    @Expose@SerializedName("group_ids")
+    private int[] groupIds;
 
     public PostMembers(JEmma jemma, List<HashMap<String, String>> members) {
         super(jemma);
-        this.jsonObject = new JsonObject();
-        jsonObject.add("members", jemma.getGson().toJsonTree(members));
+        this.memebers = members;
     }
 
     public PostMembers automateFieldChanges() {
-        jsonObject.addProperty("automate_field_changes", true);
+        this.automateFieldChanges = true;
         return this;
     }
 
     public PostMembers setSourceFilename(String filename) {
-        jsonObject.addProperty("source_filename", filename);
+        this.sourceFilename = filename;
         return this;
     }
 
     public PostMembers setAddOnly() {
-        jsonObject.addProperty("add_only", true);
+        this.addOnly = true;
         return this;
     }
 
     public PostMembers addToGroups(int[] groupIds){
-        jsonObject.add("group_ids", jemma.getGson().toJsonTree(groupIds));
+        this.groupIds = groupIds;
         return this;
     }
 
     public Long execute() {
-        String json = jsonObject.toString();
+        String json = jemma.getGson().toJson(this);
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
         Request request = new Request.Builder()
                 .url(urlBuilder.build())
                 .post(body).build();
-        return execute(request, Response.class).getImportID();
+        return execute(request, Response.class).importID;
     }
 
     private static class Response {
-        @SerializedName("import_id")
+        @Expose@SerializedName("import_id")
         private Long importID;
-        Long getImportID() {
-            return importID;
-        }
     }
 
 }

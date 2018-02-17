@@ -37,7 +37,7 @@ public class JEmma {
                 (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
             String dateTimeStr = json.getAsJsonPrimitive().getAsString();
             return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("'@D:'yyyy-MM-dd'T'HH:mm:ss"));
-        }).create();
+        }).excludeFieldsWithoutExposeAnnotation().create();
 
         members = new Members(this);
     }
