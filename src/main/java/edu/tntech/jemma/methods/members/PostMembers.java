@@ -1,6 +1,5 @@
 package edu.tntech.jemma.methods.members;
 
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import edu.tntech.jemma.JEmma;
@@ -9,7 +8,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PostMembers extends MembersApiMethod<Long>{
 
@@ -26,7 +27,7 @@ public class PostMembers extends MembersApiMethod<Long>{
     private Boolean addOnly;
 
     @Expose@SerializedName("group_ids")
-    private int[] groupIds;
+    private Set<Integer> groupIds;
 
     public PostMembers(JEmma jemma, List<HashMap<String, String>> members) {
         super(jemma);
@@ -49,7 +50,18 @@ public class PostMembers extends MembersApiMethod<Long>{
     }
 
     public PostMembers addToGroups(int[] groupIds){
-        this.groupIds = groupIds;
+        if (this.groupIds == null)
+            this.groupIds = new HashSet<>();
+        for (int i : groupIds) {
+            this.groupIds.add(i);
+        }
+        return this;
+    }
+
+    public PostMembers addToGroup(int groupID) {
+        if (groupIds == null)
+            groupIds = new HashSet<>();
+        groupIds.add(groupID);
         return this;
     }
 

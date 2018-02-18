@@ -13,7 +13,8 @@ public class Tester {
 
         JEmma jemma = new JEmma(accountID, publicKey, privateKey);
 
-        /*System.out.println(jemma.members().count().includeDeleted().execute());
+        int memberCount = jemma.members().count().execute();
+        System.out.println("# of members: " + memberCount);
 
         //System.out.println(jemma.members().listAll().from(1000).execute().size());
 
@@ -40,8 +41,9 @@ public class Tester {
         members.add(jemma.members().create("other@lol.wat"));
 
         long importID = jemma.members().save(members)
-                .automateFieldChanges().setSourceFilename("Lol3.csv").execute();
-        System.out.println(importID);*/
+                .addToGroup(0).addToGroup(2)
+                .setSourceFilename("Lol3.csv").execute();
+        System.out.println(importID);
 
         long memberID = jemma.members().save("myemail@rofl.yey")
                 .addField("first_name", "Zee")
